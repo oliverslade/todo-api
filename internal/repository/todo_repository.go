@@ -1,8 +1,10 @@
 package repository
 
+import "database/sql"
+
 type TodoRepository struct {
 }
 
-func NewTodoRepository() *TodoRepository {
+func NewTodoRepository(db *sql.DB) *TodoRepository {
 	return &TodoRepository{}
 }

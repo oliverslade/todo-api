@@ -1,7 +1,10 @@
 package main
 
 import (
+	"database/sql"
+	"log/slog"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/oliverslade/todo-api/internal/api"
@@ -10,7 +13,13 @@ import (
 
 func main() {
 
-	repository := repository.NewTodoRepository()
+	db, err := sql.Open("sqlite3", "todo.db")
+	if err != nil {
+		slog.Error("failed to open db")
+		os.Exit(1)
+	}
+
+	repository := repository.NewTodoRepository(db)
 	todoHandler := api.NewTodoHandler(repository)
 
 	router := chi.NewRouter()
