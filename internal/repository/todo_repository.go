@@ -1,13 +1,23 @@
 package repository
 
-import "database/sql"
+import (
+	"context"
+	"database/sql"
+)
 
-type TodoRepository struct {
+type TodoRepo struct {
 	queries *Queries
 }
 
-func NewTodoRepository(db *sql.DB) *TodoRepository {
-	return &TodoRepository{
+func NewTodoRepo(db *sql.DB) TodoRepository {
+	return &TodoRepo{
 		queries: New(db),
 	}
+}
+
+func (r *TodoRepo) CreateTodo(ctx context.Context, todo Todo) error {
+	return r.queries.CreateTodo(ctx, CreateTodoParams{
+		Message:    todo.Message,
+		IsFinished: todo.IsFinished,
+	})
 }

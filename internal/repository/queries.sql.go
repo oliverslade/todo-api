@@ -9,6 +9,20 @@ import (
 	"context"
 )
 
+const createTodo = `-- name: CreateTodo :exec
+INSERT INTO todos (message, is_finished) VALUES (?, ?)
+`
+
+type CreateTodoParams struct {
+	Message    string
+	IsFinished bool
+}
+
+func (q *Queries) CreateTodo(ctx context.Context, arg CreateTodoParams) error {
+	_, err := q.db.ExecContext(ctx, createTodo, arg.Message, arg.IsFinished)
+	return err
+}
+
 const getAllTodos = `-- name: GetAllTodos :many
 SELECT id, message, is_finished FROM todos
 ORDER BY id

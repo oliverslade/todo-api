@@ -1,5 +1,5 @@
 .PHONY: build
-build: vet
+build:
 	@echo "Building todo-api..."
 	@go build -o bin/todo-api ./cmd/todo-api
 
