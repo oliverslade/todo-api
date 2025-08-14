@@ -18,6 +18,7 @@ func main() {
 		slog.Error("failed to open db")
 		os.Exit(1)
 	}
+	defer db.Close()
 
 	repository := repository.NewTodoRepository(db)
 	todoHandler := api.NewTodoHandler(repository)

@@ -6,7 +6,7 @@ build: vet
 .PHONY: run
 run: build
 	@echo "Starting todo-api on port 8080..."
-	@DATABASE_URL="postgres://localhost/todo?sslmode=disable" ./bin/todo-api
+	./bin/todo-api
 
 .PHONY: clean
 clean:
