@@ -14,8 +14,8 @@ INSERT INTO todos (message, is_finished) VALUES (?, ?)
 `
 
 type CreateTodoParams struct {
-	Message    string
-	IsFinished bool
+	Message    string `json:"message"`
+	IsFinished bool   `json:"is_finished"`
 }
 
 func (q *Queries) CreateTodo(ctx context.Context, arg CreateTodoParams) error {

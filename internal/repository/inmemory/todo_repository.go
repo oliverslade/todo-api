@@ -11,10 +11,22 @@ type InMemoryTodoRepo struct {
 }
 
 func NewInMemoryTodoRepo() repository.TodoRepository {
-	return &InMemoryTodoRepo{todos: []repository.Todo{}}
+	return &InMemoryTodoRepo{
+		todos: []repository.Todo{
+			{
+				ID:         1,
+				Message:    "Buy groceries",
+				IsFinished: false,
+			},
+		},
+	}
 }
 
 func (r *InMemoryTodoRepo) CreateTodo(ctx context.Context, todo repository.Todo) error {
 	r.todos = append(r.todos, todo)
 	return nil
+}
+
+func (r *InMemoryTodoRepo) GetAllTodos(ctx context.Context) ([]repository.Todo, error) {
+	return r.todos, nil
 }

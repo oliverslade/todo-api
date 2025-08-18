@@ -56,3 +56,21 @@ func TestTodoHandler_CreateTodo(t *testing.T) {
 		assert.Equal(t, "{\"error\":\"message is required\"}", response.Body.String())
 	})
 }
+
+func TestTodoHandler_ListTodo(t *testing.T) {
+
+	t.Run("should return all todos successfully with valid request", func(t *testing.T) {
+		repo := inmemory.NewInMemoryTodoRepo()
+		handler := NewTodoHandler(repo)
+
+		router := chi.NewRouter()
+		router.Get("/todos", handler.ListTodo)
+
+		request := httptest.NewRequest(http.MethodGet, "/todos", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		assert.Equal(t, http.StatusOK, response.Code)
+		assert.Equal(t, `[{"id":1,"message":"Buy groceries","is_finished":false}]`+"\n", response.Body.String())
+	})
+}

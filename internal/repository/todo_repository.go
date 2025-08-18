@@ -21,3 +21,7 @@ func (r *TodoRepo) CreateTodo(ctx context.Context, todo Todo) error {
 		IsFinished: todo.IsFinished,
 	})
 }
+
+func (r *TodoRepo) GetAllTodos(ctx context.Context) ([]Todo, error) {
+	return r.queries.GetAllTodos(ctx)
+}

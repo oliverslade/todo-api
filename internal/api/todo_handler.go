@@ -17,7 +17,18 @@ func NewTodoHandler(repo repository.TodoRepository) *TodoHandler {
 }
 
 func (h *TodoHandler) ListTodo(w http.ResponseWriter, r *http.Request) {
-	returnNotImplemented(w)
+	todos, err := h.repo.GetAllTodos(r.Context())
+	if err != nil {
+		slog.Error("failed to get todos", slog.String("error", err.Error()))
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{"error":"failed to get todos"}`))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(todos)
 }
 
 func (h *TodoHandler) GetTodo(w http.ResponseWriter, r *http.Request) {

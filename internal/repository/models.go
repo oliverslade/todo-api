@@ -5,7 +5,7 @@
 package repository
 
 type Todo struct {
-	ID         int64
-	Message    string
-	IsFinished bool
+	ID         int64  `json:"id"`
+	Message    string `json:"message"`
+	IsFinished bool   `json:"is_finished"`
 }
