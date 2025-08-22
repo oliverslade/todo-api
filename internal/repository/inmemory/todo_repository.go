@@ -2,6 +2,7 @@ package inmemory
 
 import (
 	"context"
+	"errors"
 
 	"github.com/oliverslade/todo-api/internal/repository"
 )
@@ -29,4 +30,13 @@ func (r *InMemoryTodoRepo) CreateTodo(ctx context.Context, todo repository.Todo)
 
 func (r *InMemoryTodoRepo) GetAllTodos(ctx context.Context) ([]repository.Todo, error) {
 	return r.todos, nil
+}
+
+func (r *InMemoryTodoRepo) GetTodoById(ctx context.Context, id int64) (repository.Todo, error) {
+	for _, todo := range r.todos {
+		if todo.ID == id {
+			return todo, nil
+		}
+	}
+	return repository.Todo{}, errors.New("todo not found")
 }

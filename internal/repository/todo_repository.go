@@ -25,3 +25,7 @@ func (r *TodoRepo) CreateTodo(ctx context.Context, todo Todo) error {
 func (r *TodoRepo) GetAllTodos(ctx context.Context) ([]Todo, error) {
 	return r.queries.GetAllTodos(ctx)
 }
+
+func (r *TodoRepo) GetTodoById(ctx context.Context, id int64) (Todo, error) {
+	return r.queries.GetTodoById(ctx, id)
+}

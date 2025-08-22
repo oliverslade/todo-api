@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/oliverslade/todo-api/internal/repository"
 )
 
@@ -32,7 +34,27 @@ func (h *TodoHandler) ListTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *TodoHandler) GetTodo(w http.ResponseWriter, r *http.Request) {
-	returnNotImplemented(w)
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		slog.Error("failed to parse id", slog.String("error", err.Error()))
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"error":"id must be an integer"}`))
+		return
+	}
+
+	todo, err := h.repo.GetTodoById(r.Context(), id)
+	if err != nil {
+		slog.Error("failed to get todo", slog.String("error", err.Error()))
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{"error":"failed to get todo"}`))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(todo)	
 }
 
 func (h *TodoHandler) CreateTodo(w http.ResponseWriter, r *http.Request) {

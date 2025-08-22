@@ -50,3 +50,15 @@ func (q *Queries) GetAllTodos(ctx context.Context) ([]Todo, error) {
 	}
 	return items, nil
 }
+
+const getTodoById = `-- name: GetTodoById :one
+SELECT id, message, is_finished FROM todos
+WHERE id = ?
+`
+
+func (q *Queries) GetTodoById(ctx context.Context, id int64) (Todo, error) {
+	row := q.db.QueryRowContext(ctx, getTodoById, id)
+	var i Todo
+	err := row.Scan(&i.ID, &i.Message, &i.IsFinished)
+	return i, err
+}

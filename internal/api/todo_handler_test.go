@@ -74,3 +74,36 @@ func TestTodoHandler_ListTodo(t *testing.T) {
 		assert.Equal(t, `[{"id":1,"message":"Buy groceries","is_finished":false}]`+"\n", response.Body.String())
 	})
 }
+
+func TestTodoHandler_GetTodoById(t *testing.T) {
+
+	t.Run("should return a todo successfully with valid request", func(t *testing.T) {
+		repo := inmemory.NewInMemoryTodoRepo()
+		handler := NewTodoHandler(repo)
+
+		router := chi.NewRouter()
+		router.Get("/todos/{id}", handler.GetTodo)
+
+		request := httptest.NewRequest(http.MethodGet, "/todos/1", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		assert.Equal(t, http.StatusOK, response.Code)
+		assert.Equal(t, `{"id":1,"message":"Buy groceries","is_finished":false}`+"\n", response.Body.String())
+	})
+
+	t.Run("should return bad request when id is not an integer", func(t *testing.T) {
+		repo := inmemory.NewInMemoryTodoRepo()
+		handler := NewTodoHandler(repo)
+
+		router := chi.NewRouter()
+		router.Get("/todos/{id}", handler.GetTodo)
+
+		request := httptest.NewRequest(http.MethodGet, "/todos/not-an-integer", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		assert.Equal(t, http.StatusBadRequest, response.Code)
+		assert.Equal(t, "{\"error\":\"id must be an integer\"}", response.Body.String())
+	})
+}
