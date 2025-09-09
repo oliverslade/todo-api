@@ -40,3 +40,13 @@ func (r *InMemoryTodoRepo) GetTodoById(ctx context.Context, id int64) (repositor
 	}
 	return repository.Todo{}, errors.New("todo not found")
 }
+
+func (r *InMemoryTodoRepo) SetTodoFinished(ctx context.Context, id int64, isFinished bool) error {
+	for i := range r.todos {
+		if r.todos[i].ID == id {
+			r.todos[i].IsFinished = isFinished
+			return nil
+		}
+	}
+	return errors.New("todo not found")
+}

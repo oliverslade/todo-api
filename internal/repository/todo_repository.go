@@ -29,3 +29,10 @@ func (r *TodoRepo) GetAllTodos(ctx context.Context) ([]Todo, error) {
 func (r *TodoRepo) GetTodoById(ctx context.Context, id int64) (Todo, error) {
 	return r.queries.GetTodoById(ctx, id)
 }
+
+func (r *TodoRepo) SetTodoFinished(ctx context.Context, id int64, isFinished bool) error {
+	return r.queries.SetTodoFinished(ctx, SetTodoFinishedParams{
+		ID:         id,
+		IsFinished: isFinished,
+	})
+}

@@ -8,3 +8,6 @@ WHERE id = ?;
 
 -- name: CreateTodo :exec
 INSERT INTO todos (message, is_finished) VALUES (?, ?);
+
+-- name: SetTodoFinished :exec
+UPDATE todos SET is_finished = ? WHERE id = ?;

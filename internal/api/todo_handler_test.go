@@ -107,3 +107,21 @@ func TestTodoHandler_GetTodoById(t *testing.T) {
 		assert.Equal(t, "{\"error\":\"id must be an integer\"}", response.Body.String())
 	})
 }
+
+func TestTodoHandler_UpdateTodo(t *testing.T) {
+
+	t.Run("should update a todo successfully with only is_finished", func(t *testing.T) {
+		repo := inmemory.NewInMemoryTodoRepo()
+		handler := NewTodoHandler(repo)
+
+		router := chi.NewRouter()
+		router.Put("/todos/{id}", handler.UpdateTodo)
+
+		request := httptest.NewRequest(http.MethodPut, "/todos/1", bytes.NewBufferString(`{"is_finished": true}`))
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		assert.Equal(t, http.StatusOK, response.Code)
+		assert.Equal(t, `{"id":1,"message":"Buy groceries","is_finished":true}`+"\n", response.Body.String())
+	})
+}

@@ -92,11 +92,36 @@ func (h *TodoHandler) CreateTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *TodoHandler) UpdateTodo(w http.ResponseWriter, r *http.Request) {
-	returnNotImplemented(w)
-}
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		slog.Error("failed to parse id", slog.String("error", err.Error()))
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"error":"id must be an integer"}`))
+		return
+	}
 
-func returnNotImplemented(w http.ResponseWriter) {
+	var model = repository.Todo{}
+	err = json.NewDecoder(r.Body).Decode(&model)
+	if err != nil {
+		slog.Error("failed to decode todo request", slog.String("error", err.Error()))
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"error":"failed to decode todo request"}`))
+		return
+	}
+
+	err = h.repo.SetTodoFinished(r.Context(), id, model.IsFinished)
+	if err != nil {
+		slog.Error("failed to update todo", slog.String("error", err.Error()))
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(`{"error":"failed to update todo"}`))
+		return
+	}
+
+	slog.Info("todo updated successfully", slog.Int64("id", id))
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{"error": "not implemented"})
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(model)
 }

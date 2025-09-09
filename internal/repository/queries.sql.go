@@ -62,3 +62,17 @@ func (q *Queries) GetTodoById(ctx context.Context, id int64) (Todo, error) {
 	err := row.Scan(&i.ID, &i.Message, &i.IsFinished)
 	return i, err
 }
+
+const setTodoFinished = `-- name: SetTodoFinished :exec
+UPDATE todos SET is_finished = ? WHERE id = ?
+`
+
+type SetTodoFinishedParams struct {
+	IsFinished bool  `json:"is_finished"`
+	ID         int64 `json:"id"`
+}
+
+func (q *Queries) SetTodoFinished(ctx context.Context, arg SetTodoFinishedParams) error {
+	_, err := q.db.ExecContext(ctx, setTodoFinished, arg.IsFinished, arg.ID)
+	return err
+}
