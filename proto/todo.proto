@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package todo.v1;
+
+option go_package = "github.com/oliverslade/todo-api/proto/todo/v1;todov1";
+
+service TodoHandler {
+  rpc ListTodos(ListTodosRequest) returns (ListTodosResponse);
+  rpc GetTodo(GetTodoRequest) returns (GetTodoResponse);
+  rpc CreateTodo(CreateTodoRequest) returns (CreateTodoResponse);
+  rpc UpdateTodo(UpdateTodoRequest) returns (UpdateTodoResponse);
+}
+
+message Todo {
+  int64 id = 1;
+  string message = 2;
+  bool is_finished = 3;
+}
+
+message ListTodosRequest {}
+
+message ListTodosResponse {
+  repeated Todo todos = 1;
+}
+
+message GetTodoRequest {
+  int64 id = 1;
+}
+
+message GetTodoResponse {
+  Todo todo = 1;
+}
+
+message CreateTodoRequest {
+  string message = 1;
+  bool is_finished = 2;
+}
+
+message CreateTodoResponse {
+  Todo todo = 1;
+}
+
+message UpdateTodoRequest {
+  int64 id = 1;
+  bool is_finished = 2;
+}
+
+message UpdateTodoResponse {
+  Todo todo = 1;
+}

@@ -8,7 +8,8 @@ import (
 )
 
 type InMemoryTodoRepo struct {
-	todos []repository.Todo
+	todos  []repository.Todo
+	nextID int64
 }
 
 func NewInMemoryTodoRepo() repository.TodoRepository {
@@ -20,11 +21,14 @@ func NewInMemoryTodoRepo() repository.TodoRepository {
 				IsFinished: false,
 			},
 		},
+		nextID: 2,
 	}
 }
 
-func (r *InMemoryTodoRepo) CreateTodo(ctx context.Context, todo repository.Todo) error {
-	r.todos = append(r.todos, todo)
+func (r *InMemoryTodoRepo) CreateTodo(ctx context.Context, todo *repository.Todo) error {
+	todo.ID = r.nextID
+	r.nextID++
+	r.todos = append(r.todos, *todo)
 	return nil
 }
 

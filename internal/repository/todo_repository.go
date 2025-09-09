@@ -15,7 +15,7 @@ func NewTodoRepo(db *sql.DB) TodoRepository {
 	}
 }
 
-func (r *TodoRepo) CreateTodo(ctx context.Context, todo Todo) error {
+func (r *TodoRepo) CreateTodo(ctx context.Context, todo *Todo) error {
 	return r.queries.CreateTodo(ctx, CreateTodoParams{
 		Message:    todo.Message,
 		IsFinished: todo.IsFinished,

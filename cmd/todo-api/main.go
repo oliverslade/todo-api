@@ -3,17 +3,18 @@ package main
 import (
 	"database/sql"
 	"log/slog"
-	"net/http"
+	"net"
 	"os"
 
-	"github.com/go-chi/chi/v5"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/oliverslade/todo-api/internal/api"
+	"google.golang.org/grpc"
+
+	grpcService "github.com/oliverslade/todo-api/internal/grpc"
 	"github.com/oliverslade/todo-api/internal/repository"
+	todov1 "github.com/oliverslade/todo-api/proto/todo/v1"
 )
 
 func main() {
-
 	db, err := sql.Open("sqlite3", "todo.db")
 	if err != nil {
 		slog.Error("failed to open db", "error", err)
@@ -21,20 +22,21 @@ func main() {
 	}
 	defer db.Close()
 
-	repository := repository.NewTodoRepo(db)
-	todoHandler := api.NewTodoHandler(repository)
+	repo := repository.NewTodoRepo(db)
+	todoHandler := grpcService.NewTodoHandler(repo)
 
-	router := chi.NewRouter()
-	router.Get("/todos", todoHandler.ListTodo)
-	router.Get("/todos/{id}", todoHandler.GetTodo)
-	router.Post("/todos", todoHandler.CreateTodo)
-	router.Put("/todos/{id}", todoHandler.UpdateTodo)
-
-	server := http.Server{
-		Addr:    ":8080",
-		Handler: router,
+	lis, err := net.Listen("tcp", ":8080")
+	if err != nil {
+		slog.Error("failed to listen", "error", err)
+		os.Exit(1)
 	}
 
-	server.ListenAndServe()
+	server := grpc.NewServer()
+	todov1.RegisterTodoHandlerServer(server, todoHandler)
 
+	slog.Info("starting server", "port", 8080)
+	if err := server.Serve(lis); err != nil {
+		slog.Error("failed to serve", "error", err)
+		os.Exit(1)
+	}
 }

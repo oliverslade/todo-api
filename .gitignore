@@ -35,6 +35,10 @@ go.work.sum
 *.sqlite
 *.sqlite3
 
+# Generated protobuf files
+proto/**/*.pb.go
+proto/**/*_grpc.pb.go
+
 # Editor/IDE
 .idea/
 .vscode/
